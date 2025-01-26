@@ -1,6 +1,6 @@
 using System;
+using ConsoleTables;
 using System.Collections.Generic;
-
 namespace MyToDo_List
 {
     public class ToDoTask
@@ -9,6 +9,7 @@ namespace MyToDo_List
         public string? Task { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsDone { get; set; }
+        public DateTime EndTime { get; set; }   
 
         public void MarkTask()
         {
@@ -46,13 +47,14 @@ namespace MyToDo_List
             {
                 Id = id,
                 Task = addTaskInput.Task,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.Now,
+                EndTime = addTaskInput.EndTime
             };
 
             tasks.Add(newTask);
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Your Task => '{newTask.Task}' and ID {newTask.Id} created successfully!");
+            Console.WriteLine($"Your Task => '{newTask.Task}' and Id {newTask.Id} and The EndTine {newTask.EndTime} created successfully !");
             Console.ResetColor();
             Console.WriteLine(" ");
 
@@ -78,21 +80,7 @@ namespace MyToDo_List
 
         }
 
-        public void ViewAll()
-
-        {
-            if (tasks.Count == 0)
-            {
-                Console.WriteLine("There is no Task in Data BAse yet!. Add a new tasks", ConsoleColor.Cyan);
-                return;
-            }
-            foreach (var ViewAllTask in tasks)
-            {
-                Console.WriteLine(string.Join(" ", ViewAllTask.Task + " Was Created At :", ViewAllTask.CreatedAt));
-            }
-            Console.ResetColor();
-        }
-
+        
         public void MarkTask()
         {
             Console.WriteLine("Enter Id Of The Task You want to Mark");
@@ -110,8 +98,29 @@ namespace MyToDo_List
             {
                 Console.WriteLine("Not Found");
             }
-
         }
+
+public void ViewAll()
+{
+    if (tasks.Count == 0)
+    {
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("There are no tasks in the database yet! Add new tasks bobo ");
+        Console.ResetColor();
+        return;
+    }
+
+    var table = new ConsoleTable("Id", "Task", "Created At", "End Time");
+
+    foreach (var task in tasks)
+    {
+        table.AddRow(task.Id, task.Task, task.CreatedAt.ToString("dd MMM yyyy HH:mm:ss"), task.EndTime.ToString("dd MMM yyyy HH:mm:ss"));
+    }
+
+    table.Write();
+    Console.WriteLine();
+}
+
 
         public void UpdateTask()
         {
@@ -124,6 +133,7 @@ namespace MyToDo_List
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("The task you are trying to update does not exist!");
             }
+            
             else
             {
                 Console.WriteLine($"Current Task: {task.Task}");
@@ -134,12 +144,14 @@ namespace MyToDo_List
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"Task {task.Id} updated successfully To => '{task.Task}'.");
+
             }
 
             Console.ResetColor();
 
         }
-        private ToDoTask? GetById(int id){
+        private ToDoTask? GetById(int id)
+        {
             return tasks.Find(x => x.Id == id);
 
         }
